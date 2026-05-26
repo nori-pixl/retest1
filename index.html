@@ -2,21 +2,37 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>reCAPTCHA導入サンプル</title>
-    <!-- 1. GoogleのAPIスクリプトを読み込む -->
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <title>reCAPTCHA v3 導入サンプル</title>
+    <!-- 1. URLの末尾にあなたのサイトキーを付与して読み込む -->
+    <script src="https://google.com"></script>
 </head>
 <body>
 
-    <form action="submit.php" method="POST">
+    <!-- 送信時にJavaScriptを実行するため、formにidを付与 -->
+    <form id="demo-form" action="submit.php" method="POST">
         <p>名前：<input type="text" name="name" required></p>
         
-        <!-- 2. reCAPTCHAを表示するウィジェット（サイトキーを入力） -->
-        <div class="g-recaptcha" data-sitekey="6Ldlkv0sAAAAAAAkkx4xCsd2AjkEulgCZAAPrRQq"></div>
+        <!-- 2. サーバー側にトークンを送るための隠し入力欄（hidden）を用意 -->
+        <input type="hidden" name="recaptcha_token" id="recaptchaToken">
         
-        <br>
         <button type="submit">送信する</button>
     </form>
+
+    <!-- 3. トークンを自動取得してフォームにセットするJavaScript -->
+    <script>
+        document.getElementById('demo-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // 一時的にフォーム送信を止める
+            
+            grecaptcha.ready(function() {
+                grecaptcha.execute('6Ldlkv0sAAAAAAAkkx4xCsd2AjkEulgCZAAPrRQq', {action: 'submit'}).then(function(token) {
+                    // 隠し入力欄にトークンをセット
+                    document.getElementById('recaptchaToken').value = token;
+                    // フォームを送信
+                    document.getElementById('demo-form').submit();
+                });
+            });
+        });
+    </script>
 
 </body>
 </html>
